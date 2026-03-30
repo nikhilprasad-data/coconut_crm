@@ -42,3 +42,13 @@ CREATE TABLE IF NOT EXISTS finance.payments
 		payment_method	VARCHAR(50)	NOT NULL,
 		CONSTRAINT payment_id_pk PRIMARY KEY(payment_id)
 	);
+
+CREATE TABLE IF NOT EXISTS master.users
+(
+	user_id 		SERIAL,
+	username		VARCHAR(100)	UNIQUE NOT NULL,
+	password_hash 	VARCHAR(255) 	NOT NULL,
+	role 		VARCHAR(20) 	DEFAULT 	'seller',
+	seller_id		INT 			REFERENCES master.sellers(seller_id),
+	CONSTRAINT user_id_pk PRIMARY KEY(user_id)
+);
