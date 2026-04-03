@@ -13,5 +13,7 @@ class Seller(db.Model):
 
      address_id     = db.Column(db.Integer, db.ForeignKey('master.locations.address_id'))
 
+     is_active      = db.Column(db.Boolean, default= True)
+
      def __repr__(self):
           return f"<Seller {self.seller_name}>"

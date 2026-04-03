@@ -18,4 +18,10 @@ def create_app():
      from .routes.seller import seller_bp
      app.register_blueprint(seller_bp)
 
+     from .routes.purchase import purchase_bp
+     app.register_blueprint(purchase_bp)
+
+     from .routes.payment import payment_bp
+     app.register_blueprint(payment_bp)
+
      return app
