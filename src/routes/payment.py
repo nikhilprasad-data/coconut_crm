@@ -32,7 +32,7 @@ def get_payment(seller_id):
           if not existing_seller:
                return jsonify({
                               "status" : "error",
-                              "message" : f"{seller_id}, seller id not exists"
+                              "message" : f"Seller id {seller_id}, not exists"
                     }), 404
           
           seller_dict = {
@@ -105,7 +105,7 @@ def add_payment():
                print(e)
                return jsonify({
                               "status"  : "error",
-                              "message" : f"Please input required seller_id in correct data type format"
+                              "message" : "Please input required seller_id in correct data type format"
                }), 400
           
           existing_seller = Seller.query.get(seller_id)
@@ -244,7 +244,7 @@ def update_payment(payment_id):
           db.session.commit()
           return jsonify({
                          "status"            : "success",
-                         "message"           : f"Payment {payment_id}, updated successfully",
+                         "message"           : f"Payment id {payment_id}, updated successfully",
                          "field_updated"     : updated_feilds
           }), 200
      
@@ -271,7 +271,7 @@ def replace_payment(payment_id):
           if current_user.role == 'Seller':
                return jsonify({
                               "status"  : "error",
-                              "message" : "Access Denied. Seller can't replace payment"
+                              "message" : "Access Denied. As seller you can't replace payment"
                }), 403
           
           existing_payment = Payment.query.get(payment_id)
@@ -279,7 +279,7 @@ def replace_payment(payment_id):
           if not existing_payment:
                return jsonify({
                               "status"  : "error",
-                              "message" : "Payment not found"
+                              "message" : f"Payment id {payment_id}, not found"
                }), 404
           
           data = request.get_json()

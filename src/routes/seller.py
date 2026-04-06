@@ -24,7 +24,7 @@ def add_seller():
           if current_user.role == 'Seller':
                return jsonify({
                               "status"  : "error",
-                              "message" : "Access Denied. As seller you can't delete any seller"
+                              "message" : "Access Denied. As seller you can't add any seller"
                }), 403
 
           data                =    request.get_json()
@@ -107,7 +107,7 @@ def get_sellers():
           if current_user.role == 'Seller':
                return jsonify({
                               "status"  : "error",
-                              "message" : "Access Denied. As seller you can't delete any seller"
+                              "message" : "Access Denied. As seller you can't see any seller data"
                }), 403
           
           all_seller = Seller.query.filter_by(is_active= True).all()
@@ -171,14 +171,14 @@ def delete_seller(seller_id):
           if not seller:
                return jsonify({
                               "status"  : "error",
-                              "message" : f"{seller_id}, seller id not found"
+                              "message" : f"Seller id {seller_id}, not found"
                }), 404
           
           seller.is_active = False
           db.session.commit()
           return jsonify({
                          "status"  : "success",
-                         "message" : "Seller deleted successfully"
+                         "message" : f"Seller id {seller_id}, deleted successfully"
           }), 200
      
      except Exception as e:

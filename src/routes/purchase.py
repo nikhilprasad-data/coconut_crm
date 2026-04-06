@@ -31,7 +31,7 @@ def get_purchase(seller_id):
           if not existing_seller:
                return jsonify({
                               "status" : "error",
-                              "message": f"{seller_id} seller id, not exists"
+                              "message": f"Seller id {seller_id}, not exists"
                }), 404
           
           seller_dict  = {
@@ -159,7 +159,7 @@ def update_purchase(purchase_id):
           if current_user.role == 'Seller':
                return jsonify({
                               "status"  : "error",
-                              "message" : "Access Denied. Seller can't update any payment"
+                              "message" : "Access Denied. Seller can't update any purchase"
                }), 403
         
           existing_purchase = Purchase.query.get(purchase_id)
@@ -167,7 +167,7 @@ def update_purchase(purchase_id):
           if not existing_purchase:
              return jsonify({
                               "status"  : "error",
-                              "message" : "Payment not found"
+                              "message" : f"Purchase id {purchase_id}, not found"
              }), 404
         
           data = request.get_json()
@@ -259,7 +259,7 @@ def update_purchase(purchase_id):
           db.session.commit()
           return jsonify({
                          "status"            : "success",
-                         "message"           : f"Purchase {purchase_id} updated successfully",
+                         "message"           : f"Purchase id {purchase_id} updated successfully",
                          "fields_updated"    : updated_fields
           }), 200
           
@@ -286,7 +286,7 @@ def replace_purchase(purchase_id):
           if current_user.role == 'Seller':
                return jsonify({
                               "status"  : "error",
-                              "message" : "Access Denied. Seller can't replace purchase"
+                              "message" : "Access Denied. Seller can't replace purchase data"
                }), 403
           
           existing_purchase = Purchase.query.get(purchase_id)
@@ -294,7 +294,7 @@ def replace_purchase(purchase_id):
           if not existing_purchase:
                return jsonify({
                               "status"  : "error",
-                              "message" : "Purchase not found"
+                              "message" : f"Purchase id {purchase_id} not found"
                }), 404
           
           data = request.get_json()
@@ -335,10 +335,10 @@ def replace_purchase(purchase_id):
                total_bags = float(data.get("total_bags"))
                replaced_data.append({"total_bags" : total_bags})
 
-               waste_pieces = str(data.get("waste_pieces"))
+               waste_pieces = int(data.get("waste_pieces"))
                replaced_data.append({"waste_pieces" : waste_pieces})
 
-               rate_per_piece = str(data.get("rate_per_piece"))
+               rate_per_piece = float(data.get("rate_per_piece"))
                replaced_data.append({"rate_per_piece" : rate_per_piece})
 
           except Exception as e:
