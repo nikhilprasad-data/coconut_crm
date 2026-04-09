@@ -187,3 +187,45 @@ def delete_seller(seller_id):
                          "status"  : "error",
                          "message" : "Internal server error"
           }), 500
+     
+@seller_bp.route('/profile', methods= ['GET'])
+@jwt_required()
+def seller_profile():
+     try:
+          current_identity    = int(get_jwt_identity())
+          current_user        = User.query.get(current_identity)
+
+          if not current_user:
+               return jsonify({
+                    "status"  : "error",
+                    "message" : "User not found"
+               }), 404
+          
+          if current_user.role == "admin":
+               return jsonify({
+                              "status"  : "error",
+                              "message" : "Access Denied. Only sellers can view this profile."
+               }), 403
+
+
+          current_seller_data      = Seller.query.get(current_user.seller_id)
+          current_seller_location  = Location.query.get(current_seller_data.address_id)
+
+          seller_data = {
+                         "seller_user_name"       : current_user.username,
+                         "seller_name"            : current_seller_data.seller_name,
+                         "seller_contact_number"  : current_seller_data.contact_number,
+                         "seller_city"            : current_seller_location.city,
+                         "seller_state"           : current_seller_location.state
+                    }
+          return jsonify({
+                         "status"            :"success",
+                         "seller_profile"    :seller_data
+               }), 200
+          
+     except Exception as e:
+          print(e)
+          return jsonify({
+                    "status"  : "error",
+                    "message" : "Internal server error"
+          }), 500
