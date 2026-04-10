@@ -364,17 +364,22 @@ def my_payment():
                     "message" : "User not found"
                }), 404
           
+
+          if current_user.role != "Seller":
+               return jsonify({
+                              "status"  : "error",
+                              "message" : "Access denied. Only Sellers can view their own payment records"
+               }), 403
+          
           payment_list = []
-          if current_user.role == 'Seller':
-               existing_payment = Payment.query.filter_by(seller_id= current_user.seller_id).all()
-               for payment in existing_payment:
-                    payment_dict = {
-                                   "payment_id"        : payment.payment_id,
-                                   "payment_date"      : str(payment.payment_date),
-                                   "amount_paid"       : round(float(payment.amount_paid),2),
-                                   "payment_method"    : payment.payment_method}
-                    
-                    payment_list.append(payment_dict)
+          existing_payment = Payment.query.filter_by(seller_id= current_user.seller_id).all()
+          for payment in existing_payment:
+               payment_dict = {
+                              "payment_id"        : payment.payment_id,
+                              "payment_date"      : str(payment.payment_date),
+                              "amount_paid"       : round(float(payment.amount_paid),2),
+                              "payment_method"    : payment.payment_method}
+               payment_list.append(payment_dict)
                     
           return jsonify({
                          "status"  : "success",

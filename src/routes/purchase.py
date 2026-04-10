@@ -382,19 +382,24 @@ def my_purchase():
                     "status"  : "error",
                     "message" : "User not found"
                }), 404
+
+          if current_user.role != "Seller":
+               return jsonify({
+                              "status"  : "error",
+                              "message" : "Access denied. Only Sellers can view their own purchase records"
+               }), 403
           
           purchase_list = []
-          if current_user.role == 'Seller':
-               existing_purchase = Purchase.query.filter_by(seller_id= current_user.seller_id).all()
-               for purchase in existing_purchase:
-                    purchase_dict = {
-                                        "purchase_id"       : purchase.purchase_id,
-                                        "purchase_date"     : str(purchase.purchase_date),
-                                        "total_bags"        : purchase.total_bags,
-                                        "waste_pieces"      : purchase.waste_pieces,
-                                        "rate_per_piece"    : float(purchase.rate_per_piece),
-                                        "total_amount"      : round(float(((purchase.total_bags * 30) - purchase.waste_pieces)*purchase.rate_per_piece),2)}
-                    purchase_list.append(purchase_dict)
+          existing_purchase = Purchase.query.filter_by(seller_id= current_user.seller_id).all()
+          for purchase in existing_purchase:
+               purchase_dict = {
+                              "purchase_id"       : purchase.purchase_id,
+                              "purchase_date"     : str(purchase.purchase_date),
+                              "total_bags"        : purchase.total_bags,
+                              "waste_pieces"      : purchase.waste_pieces,
+                              "rate_per_piece"    : float(purchase.rate_per_piece),
+                              "total_amount"      : round(float(((purchase.total_bags * 30) - purchase.waste_pieces)*purchase.rate_per_piece),2)}
+               purchase_list.append(purchase_dict)
 
           return jsonify({
                          "status"  : "success",
