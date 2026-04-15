@@ -121,3 +121,62 @@ SELECT
 FROM load_data ld
 INNER JOIN master.sellers s
 	ON ld.seller_id = s.seller_id
+
+
+-- MODULE 3: OUTSTANDING BALANCE REPORT
+
+-- Feature : Seller Outstanding Balance Report
+-- Description : Aggregates total purchase values and total payments to compute the net outstanding balance for each seller.
+
+-- Making clean CTEs (extract_data_purchase, extract_data_payment) to optimize performance, maintainability, readability.
+
+WITH extract_data_purchase AS
+(
+     SELECT
+          seller_id,
+
+-- Calculating net purchase value (((total_bags * 30) - waste_pieces) * rate_per_piece)
+
+          SUM((((total_bags * 30) - waste_pieces) * rate_per_piece)) AS total_purchase
+     FROM finance.purchases
+
+-- GROUP BY seller_id to capture all purchase transactions accurately.
+
+     GROUP BY
+          seller_id
+),
+
+     extract_data_payment AS
+(
+     SELECT 
+          seller_id,
+
+-- Calculating total payments made by each seller
+
+          SUM(amount_paid) AS total_amount_paid
+     FROM finance.payments
+
+-- GROUP BY seller_id to ensure unique row per seller.
+
+     GROUP BY
+          seller_id
+)
+
+-- Joining master.sellers as base table to fetch seller_name for business readability.
+-- Using COALESCE to handle NULL values (mapping to 0) for accurate outstanding_balance calculation.
+
+SELECT
+     s.seller_id,
+     s.seller_name,
+     COALESCE(pur.total_purchase, 0) AS total_purchase,
+     COALESCE(pay.total_amount_paid, 0) AS total_amount_paid,
+     COALESCE((pur.total_purchase - pay.total_amount_paid), 0) AS outstanding_balance
+FROM master.sellers s
+
+-- Using LEFT JOIN on s.seller_id to ensure accurate calculation even if a seller has advance payments but no purchases.
+
+LEFT JOIN extract_data_purchase pur
+     ON s.seller_id = pur.seller_id
+LEFT JOIN extract_data_payment pay
+     ON pay.seller_id = s.seller_id
+ORDER BY s.seller_id;
