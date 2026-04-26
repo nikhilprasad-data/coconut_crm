@@ -15,34 +15,21 @@ with app.app_context():
      db.create_all()
 
      try:
-          username       =    os.environ.get('ADMIN_USERNAME')
-          password       =    os.environ.get('ADMIN_PASSWORD')
+          username       =    os.environ.get('ADMIN_USERNAME',"")
+          password       =    os.environ.get('ADMIN_PASSWORD', "")
           password_hash  =    generate_password_hash(password)
           role           =    'admin'
 
-          demo_username       =    "demo_admin_11"
-          demo_password       =    "demo_password"
-          demo_password_hash  =    generate_password_hash(demo_password)
-          demo_role           =    'admin'
+          existing_admin = User.query.filter_by(username= username).first()
 
-          existing_user       =    User.query.filter_by(username= username).first()
-          demo_existing_user  =    User.query.filter_by(username= demo_username).first()
+          if existing_admin:
+               print("Admin already exists.")
 
-          if existing_user:
-               print("Admin already exists")
           else:
-               admin     = User(username= username, password_hash= password_hash,  role= role)
+               admin = User(username= username, password_hash= password_hash, role= "admin")
                db.session.add(admin)
                db.session.commit()
-               print("Admin created successfully")
-
-          if demo_existing_user:
-               print("Demo Admin already exists")
-          else:
-               demo_admin     = User(username= demo_username, password_hash= demo_password_hash,  role= demo_role)
-               db.session.add(demo_admin)
-               db.session.commit()
-               print("Demo Admin created successfully")
+               print("Admin created successfully.")
                
      except Exception as e:
           print(e)
